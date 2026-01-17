@@ -1,25 +1,41 @@
 import cv2
 from deepface import DeepFace
+import os
 
-img_reference = "database/user.jpg" 
-img_test = "database/user.jpg"      
+reference_img_path = "database/user.jpg"
 
-print("Analyse en cours... (Cela peut prendre un peu de temps la première fois)")
+# Initialisation de la capture vidéo (0 = webcam par défaut)
+cap = cv2.VideoCapture(0)
 
-try:
-    
-    resultat = DeepFace.verify(
-        img1_path = img_reference, 
-        img2_path = img_test, 
-        model_name = "Facenet"
-    )
+print("Système de contrôle d'accès activé. Appuyez sur 'q' pour quitter.")
 
-    if resultat['verified'] == True:
-        print("✅ ACCÈS AUTORISÉ : C'est bien la même personne !")
-        print(f"Distance (Précision) : {resultat['distance']}")
-    else:
-        print("❌ ACCÈS REFUSÉ : Visages différents.")
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
 
-except Exception as e:
-    print(f"Erreur : {e}")
-    print("Vérifie que le nom de ta photo est correct et qu'elle est bien dans le dossier database.")
+    # Pour ne pas ralentir l'ordinateur, on analyse une image toutes les 30 frames
+    if cv2.waitKey(1) & 0xFF == ord('v'): # Appuie sur 'v' pour vérifier
+        try:
+            # Analyse du visage actuel par rapport à la référence
+            result = DeepFace.verify(frame, reference_img_path, model_name="Facenet", enforce_detection=False)
+            
+            if result['verified']:
+                color = (0, 255, 0) # Vert
+                label = "ACCES AUTORISE"
+            else:
+                color = (0, 0, 255) # Rouge
+                label = "ACCES REFUSE"
+                
+            print(f"Résultat: {label} (Distance: {round(result['distance'], 2)})")
+        except Exception as e:
+            print(f"Erreur d'analyse: {e}")
+
+    # 2. Affichage (Optionnel pour l'instant)
+    cv2.imshow("Controle d'Acces Facial", frame)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
