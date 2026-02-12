@@ -1,4 +1,6 @@
-deepface
-tf-keras
+numpy==1.26.4
+tensorflow-cpu==2.15.0
+tf-keras==2.15.0
+deepface==0.0.92
 opencv-python-headless
 flask

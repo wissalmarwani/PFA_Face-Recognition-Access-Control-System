@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FaceID - Système de Contrôle d'Accès par Reconnaissance Faciale">
+    <title>FaceID — Access Control System</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+
+    <div class="app-wrapper">
+        <div class="panels-container">
+
+            <!-- ===== LEFT PANEL — Welcome ===== -->
+            <div class="panel panel--welcome">
+                <div class="users-badge" id="users-badge">
+                    {{ user_count }} registered
+                </div>
+
+                <div class="face-wireframe">
+                    <svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Face outline -->
+                        <ellipse cx="60" cy="72" rx="42" ry="55" stroke-dasharray="4 3" />
+                        <!-- Eyes -->
+                        <ellipse cx="42" cy="58" rx="10" ry="6" />
+                        <ellipse cx="78" cy="58" rx="10" ry="6" />
+                        <circle cx="42" cy="58" r="3" />
+                        <circle cx="78" cy="58" r="3" />
+                        <!-- Nose -->
+                        <line x1="60" y1="62" x2="56" y2="78" />
+                        <line x1="56" y1="78" x2="64" y2="78" />
+                        <!-- Mouth -->
+                        <path d="M 48 90 Q 60 100 72 90" />
+                        <!-- Connection dots -->
+                        <circle cx="60" cy="20" r="2" fill="currentColor"
+                            style="fill: var(--accent-cyan); opacity: 0.5;" />
+                        <circle cx="30" cy="40" r="1.5" fill="currentColor"
+                            style="fill: var(--accent-cyan); opacity: 0.4;" />
+                        <circle cx="90" cy="40" r="1.5" fill="currentColor"
+                            style="fill: var(--accent-cyan); opacity: 0.4;" />
+                        <circle cx="25" cy="72" r="1.5" fill="currentColor"
+                            style="fill: var(--accent-cyan); opacity: 0.3;" />
+                        <circle cx="95" cy="72" r="1.5" fill="currentColor"
+                            style="fill: var(--accent-cyan); opacity: 0.3;" />
+                        <!-- Connection lines -->
+                        <line x1="60" y1="20" x2="42" y2="52" stroke-dasharray="2 4" opacity="0.3" />
+                        <line x1="60" y1="20" x2="78" y2="52" stroke-dasharray="2 4" opacity="0.3" />
+                        <line x1="30" y1="40" x2="42" y2="58" stroke-dasharray="2 4" opacity="0.3" />
+                        <line x1="90" y1="40" x2="78" y2="58" stroke-dasharray="2 4" opacity="0.3" />
+                    </svg>
+                </div>
+
+                <h1 class="brand-title">Face<span>ID</span></h1>
+
+                <p class="brand-desc">
+                    Système de reconnaissance faciale intelligent. Identifie les utilisateurs autorisés en temps réel.
+                </p>
+
+                <button class="btn-primary" id="btn-start" onclick="startScanning()">
+                    Get Started
+                </button>
+            </div>
+
+            <!-- ===== CENTER PANEL — Scanner ===== -->
+            <div class="panel panel--scanner">
+                <div class="scanner-viewport" id="scanner-viewport">
+                    <img src="/video_feed" alt="Camera Feed" id="camera-feed">
+                    <div class="scanner-overlay">
+                        <div class="scanner-corner scanner-corner--tl"></div>
+                        <div class="scanner-corner scanner-corner--tr"></div>
+                        <div class="scanner-corner scanner-corner--bl"></div>
+                        <div class="scanner-corner scanner-corner--br"></div>
+                        <div class="scanner-line"></div>
+                    </div>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span class="progress-value" id="progress-value">0 %</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                </div>
+
+                <span class="scanner-status" id="scanner-status">Ready</span>
+            </div>
+
+            <!-- ===== RIGHT PANEL — Result ===== -->
+            <div class="panel panel--result">
+
+                <!-- Waiting State -->
+                <div class="waiting-state" id="waiting-state">
+                    <div class="waiting-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <span class="waiting-text">Awaiting Scan</span>
+                </div>
+
+                <!-- Result Content (hidden initially) -->
+                <div id="result-content"
+                    style="display: none; flex-direction: column; align-items: center; width: 100%;">
+                    <div class="result-icon" id="result-icon"></div>
+                    <h2 class="result-title" id="result-title"></h2>
+                    <p class="result-subtitle" id="result-subtitle"></p>
+
+                    <div class="result-avatar" id="result-avatar">
+                        <img src="" alt="User Photo" id="result-avatar-img">
+                    </div>
+
+                    <h3 class="result-name" id="result-name"></h3>
+
+                    <div class="result-divider" id="result-divider"></div>
+
+                    <div class="result-info" id="result-info">
+                        <div class="info-item">
+                            <span class="info-label">Employee ID</span>
+                            <span class="info-value" id="info-emp-id">—</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Entry</span>
+                            <span class="info-value" id="info-entry">—</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Designation</span>
+                            <span class="info-value" id="info-designation">—</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Exit</span>
+                            <span class="info-value" id="info-exit">—</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-reset" onclick="resetAll()">↻ Scan Again</button>
+                </div>
+
+                <span class="copyright">© 2026 FaceID Access Control. All Rights Reserved.</span>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+
+</html>
